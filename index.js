@@ -66,8 +66,6 @@ function createTodo() {
 				editBtn.innerText = "Save";
 				input_el.removeAttribute("readonly");
 				input_el.focus();
-      
-
             })
 
     })
