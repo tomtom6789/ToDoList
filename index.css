@@ -125,6 +125,10 @@ main {
     transition: 0.4s;
 }
 
+.task .content {
+    flex: 1 1 0%;
+}
+
 .task .content .text:not(:read-only) {
     color: var(--pink);
 } 
