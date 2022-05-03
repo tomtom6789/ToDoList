@@ -1,10 +1,13 @@
 const taskForm = document.getElementById("new-task-form")
 const taskInput = () => document.getElementById("new-task-input")
 const taskList = document.getElementById("tasks")
+const submitBtn = document.getElementById("new-task-create")
 
 
-const todos = []
+// const todos = []
 const baseURL = 'http://localhost:3000/todos'
+
+// editing = false 
 
 
 document.addEventListener("DOMContentLoaded",() => {
@@ -14,7 +17,6 @@ document.addEventListener("DOMContentLoaded",() => {
 
 function loadTodos() {
     // console.log('a')
-
     fetch(baseURL)
         .then(resp => resp.json())
         .then(data => {
@@ -38,7 +40,7 @@ function displayTodos(task) {
             const input_el = document.createElement("input")
             input_el.classList.add("text")
             input_el.type = "text"
-            // input_el.setAttribute('id', 'title')
+            input_el.setAttribute('id', 'content_id')
             input_el.value = task.content
             input_el.setAttribute('readonly', 'readonly')
             content.appendChild(input_el)
@@ -60,7 +62,7 @@ function displayTodos(task) {
             edButton.classList.add("edit")
             edButton.innerText = "Edit"
             edButton.id = task.id
-            edButton.addEventListener("click", taskEdit)
+            edButton.addEventListener("click", editTask)
             
 
             actions.appendChild(delButton)
@@ -105,19 +107,47 @@ function createTodo (e) {
 }
 
 
-
-
-function taskEdit() {
-    inputElement = this.parentElement.parentElement.childNodes[0].getElementsByTagName("input").title
-   if(this.innerText.toLowerCase() == "edit"){
-      inputElement.removeAttribute("readonly");
-      inputElement.focus()
-      this.innerText = "Save";
-   } else {
-      inputElement.setAttribute("readonly", "readonly")
-      this.innerText = "Edit"
-   }
+function editTask () {
+    // debugger
+    let inputElement = this.parentElement.parentElement.childNodes[0].getElementsByTagName("input").content_id
+    if(this.innerText.toLowerCase() == "edit") {
+        inputElement.removeAttribute("readonly");
+        inputElement.focus()
+        this.innerText = "Save";
+    } else {
+        inputElement.setAttribute("readonly", "readonly")
+        this.innerText = "Edit";
+    }
+    editedTaskId = this.id 
+    updateTask(editedTaskId)
 }
+
+
+
+function updateTask(editedTaskId){
+    let content = document.getElementsByTagName("input").content_id.value
+    const strongParams = {
+        todo: {
+            content: content
+        }
+    }
+
+    fetch(baseURL + '/' + editedTaskId, {
+        method: "PATCH",
+        headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(strongParams)
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        document.getElementById("content_id").innerHTML  = data.content
+    })
+}
+
+
+
 
 
 function taskDelete() {
