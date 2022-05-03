@@ -4,7 +4,7 @@ const taskList = document.getElementById("tasks")
 
 
 const todos = []
-const baseURL = 'http://localhost:3000/todolists'
+const baseURL = 'http://localhost:3000/todos'
 
 
 document.addEventListener("DOMContentLoaded",() => {
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded",() => {
 })
 
 function loadTodos() {
-    console.log('a')
+    // console.log('a')
 
     fetch(baseURL)
         .then(resp => resp.json())
@@ -51,6 +51,7 @@ function displayTodos(task) {
             const delButton  = document.createElement("button")
             delButton.classList.add("delete")
             delButton.innerText = "Delete"
+            delButton.id = task.id 
             delButton.addEventListener("click", taskDelete)
           
 
@@ -58,6 +59,7 @@ function displayTodos(task) {
             const edButton  = document.createElement("button")
             edButton.classList.add("edit")
             edButton.innerText = "Edit"
+            edButton.id = task.id
             edButton.addEventListener("click", taskEdit)
             
 
@@ -82,7 +84,7 @@ function createTodo (e) {
             // displayTodos(task)
 
     const strongParams = {
-        todolist: {
+        todo: {
             content: taskInput().value
         }
     }
@@ -119,7 +121,13 @@ function taskEdit() {
 
 
 function taskDelete() {
-   currentTask = this.parentElement.parentElement
-   taskList.removeChild(currentTask)
+   let task_id = this.id 
+   let currentTask = this.parentElement.parentElement
+
+    fetch(baseURL + '/' + task_id, {
+        method: "delete"
+    })
+    .then(resp => resp.json())
+    .then(currentTask.remove())
 }
 
