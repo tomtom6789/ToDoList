@@ -8,7 +8,7 @@ const baseURL = 'http://localhost:3000/todos'
 
 
 
-document.addEventListener("DOMContentLoaded",() => {
+document.addEventListener("DOMContentLoaded", () => {
     // load all tasks after dom
     loadTodos()
     // Form listens to the click
@@ -20,11 +20,11 @@ function loadTodos() {
     fetch(baseURL)
         .then(resp => resp.json())
         .then(data => {
-           displayTask(data)
-        })   
+            displayTask(data)
+        })
 }
 
-function displayTask(tasks){
+function displayTask(tasks) {
     // iterate over tasks to display
     tasks.forEach(task => displayTodos(task))
 }
@@ -32,77 +32,77 @@ function displayTask(tasks){
 
 function displayTodos(task) {
 
-            // create task div 
-            const task_el = document.createElement("div")
-            task_el.classList.add("task")
-            const content = document.createElement("div")
-            content.classList.add("content")
-            task_el.appendChild(content)
+    // create task div 
+    const task_el = document.createElement("div")
+    task_el.classList.add("task")
+    const content = document.createElement("div")
+    content.classList.add("content")
+    task_el.appendChild(content)
 
-            // create input tag
-            const input_el = document.createElement("input")
-            input_el.classList.add("text")
-            input_el.type = "text"
-            // input_el.id = task.id 
-            input_el.value = task.content
-            input_el.setAttribute('readonly', 'readonly')
-            content.appendChild(input_el)
-            
-
-            // create actions div 
-            const actions = document.createElement("div")
-            actions.classList.add("actions")
+    // create input tag
+    const input_el = document.createElement("input")
+    input_el.classList.add("text")
+    input_el.type = "text"
+    // input_el.id = task.id 
+    input_el.value = task.content
+    input_el.setAttribute('readonly', 'readonly')
+    content.appendChild(input_el)
 
 
-            // create delete button
-            const delButton  = document.createElement("button")
-            delButton.classList.add("delete")
-            delButton.innerText = "Delete"
-            delButton.id = task.id 
-            delButton.addEventListener("click", taskDelete)
-          
+    // create actions div 
+    const actions = document.createElement("div")
+    actions.classList.add("actions")
 
-            // create edit button
-            const edButton  = document.createElement("button")
-            edButton.classList.add("edit")
+
+    // create delete button
+    const delButton = document.createElement("button")
+    delButton.classList.add("delete")
+    delButton.innerText = "Delete"
+    delButton.id = task.id
+    delButton.addEventListener("click", taskDelete)
+
+
+    // create edit button
+    const edButton = document.createElement("button")
+    edButton.classList.add("edit")
+    edButton.innerText = "Edit"
+    edButton.id = task.id
+
+    // edit button listens the click to edit and update task 
+    edButton.addEventListener("click", () => {
+        if (edButton.innerText.toLowerCase() == "edit") {
+            edButton.innerText = "Save"
+            input_el.removeAttribute("readonly");
+            input_el.focus()
+        } else {
             edButton.innerText = "Edit"
-            edButton.id = task.id
+            input_el.setAttribute("readonly", "readonly")
+            updateTask(edButton.id, input_el.value)
+            // debugger
+        }
+    })
 
-            // edit button listens the click to edit and update task 
-            edButton.addEventListener("click", () => {
-                if(edButton.innerText.toLowerCase() == "edit") {
-                    edButton.innerText = "Save"
-                    input_el.removeAttribute("readonly");
-                    input_el.focus()
-                } else {
-                    edButton.innerText = "Edit"
-                    input_el.setAttribute("readonly", "readonly")
-                    updateTask(edButton.id, input_el.value)
-                    // debugger
-                 }
-                })
-    
-            
-            // attached delete and edit buttons to actions div
-            actions.appendChild(delButton)
-            actions.appendChild(edButton)
-         
-            // attached actions div to task div
-            task_el.appendChild(actions)
 
-            // attached task div tasks div(tasklists)
-            taskList.appendChild(task_el)
-            
-            // reset value after each input
-            taskInput().value = ""
+    // attached delete and edit buttons to actions div
+    actions.appendChild(delButton)
+    actions.appendChild(edButton)
+
+    // attached actions div to task div
+    task_el.appendChild(actions)
+
+    // attached task div tasks div(tasklists)
+    taskList.appendChild(task_el)
+
+    // reset value after each input
+    taskInput().value = ""
 
 }
 
 
-function createTodo (e) {
+function createTodo(e) {
 
-    
-    e.preventDefault() 
+
+    e.preventDefault()
 
     // send content value to the backend 
     const strongParams = {
@@ -110,26 +110,26 @@ function createTodo (e) {
             content: taskInput().value
         }
     }
-    
+
     // prepare to send Post request
     let configObj = {
         method: "post",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json"
-      },
+        },
         body: JSON.stringify(strongParams)
     }
 
     // send to new content to the backend
     fetch(baseURL, configObj)
-    .then(resp => resp.json())
-    // receive reponse back to display on DOM
-    .then(data =>  displayTodos(data))
+        .then(resp => resp.json())
+        // receive reponse back to display on DOM
+        .then(data => displayTodos(data))
 
 }
 
-function updateTask(id, content){
+function updateTask(id, content) {
 
     const strongParams = {
         todo: {
@@ -141,10 +141,10 @@ function updateTask(id, content){
     fetch(baseURL + '/' + id, {
         method: "PATCH",
         headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(strongParams)
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(strongParams)
     })
     // .then(resp => resp.json())
     // .then(data => data.content)
@@ -155,13 +155,13 @@ function updateTask(id, content){
 
 
 function taskDelete() {
-   let task_id = this.id 
-   let currentTask = this.parentElement.parentElement
+    let task_id = this.id
+    let currentTask = this.parentElement.parentElement
 
-   // SEND DELETE REQUEST TO DELETE THE BACKEND AND FRONT END 
+    // SEND DELETE REQUEST TO DELETE THE BACKEND AND FRONT END 
     fetch(baseURL + '/' + task_id, {
-        method: "delete"
-    })
-    .then(resp => resp.json())
-    .then(currentTask.remove())
+            method: "delete"
+        })
+        .then(resp => resp.json())
+        .then(currentTask.remove())
 }
